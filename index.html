@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patio de Contenedores 4.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --verde-oscuro: #006633;
+            --amarillo: #FFD700;
+            --azul-oscuro: #003366;
+            --negro: #1a1a2e;
+            --blanco: #f8f9fa;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--negro);
+            color: var(--blanco);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--azul-oscuro));
+        }
+        
+        .content-viewer {
+            transition: all 0.3s ease;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 102, 51, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 0.1rem;
+            border-radius: 0.5rem;
+            height: 100%;
+        }
+
+        @media (max-width: 1023px) {
+            .content-viewer {
+                padding: 0.5rem;
+                border-radius: 0;
+                border: none;
+            }
+        }
+
+        .prose {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--blanco);
+            overflow-y: auto;
+            height: calc(100% - 3rem);
+            padding-right: 0.5rem;
+        }
+
+        .prose::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .prose::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 102, 51, 0.5);
+            border-radius: 3px;
+        }
+
+        .prose h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--amarillo);
+            border-bottom: 2px solid var(--amarillo);
+            padding-bottom: 0.5rem;
+        }
+
+        .prose h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 1.25rem 0 0.75rem;
+            color: var(--amarillo);
+        }
+
+        .prose p {
+            margin: 0.75rem 0;
+        }
+
+        .prose ul {
+            margin: 1rem 0;
+            padding-left: 1.25rem;
+        }
+
+        .prose li {
+            margin: 0.5rem 0;
+            position: relative;
+        }
+
+        .prose li:before {
+            content: "";
+            position: absolute;
+            left: -1.25rem;
+            top: 0.75rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: var(--amarillo);
+            border-radius: 50%;
+        }
+
+        .content-box {
+            background: rgba(0, 102, 51, 0.2);
+            border-left: 3px solid var(--amarillo);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+            color: var(--blanco);
+        }
+
+        .content-image {
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .content-image figcaption {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(0, 51, 102, 0.5);
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 51, 102, 0.7);
+            border: none;
+            color: var(--blanco);
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(0, 51, 102, 0.9);
+        }
+        
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-container {
+            display: flex;
+            gap: 5px;
+            padding: 12px 8px;
+            overflow-x: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            height: 100%;
+            width: calc(360px + 24px);
+            margin: 0 auto;
+            position: relative;
+            scrollbar-width: none;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .carousel-item {
+            transition: all 0.3s ease;
+            flex: 0 0 100px;
+            scroll-snap-align: start;
+            min-width: 0;
+            white-space: normal;
+            word-wrap: break-word;
+            text-align: center;
+            box-sizing: border-box;
+            height: 100px;
+            width: 100px;
+            margin: 0 6px;
+            background: rgba(0, 51, 102, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                flex: 0 0 90px;
+                height: 90px;
+                width: 90px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .carousel-item {
+                flex: 0 0 100px;
+                height: 100px;
+                width: 100px;
+            }
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: rgba(0, 51, 102, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .carousel-wrapper:hover .carousel-nav {
+            opacity: 1;
+        }
+
+        .carousel-nav.prev {
+            left: 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .carousel-nav.next {
+            right: 0;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .carousel-nav i {
+            font-size: 1rem;
+            color: var(--blanco);
+        }
+        
+        .carousel-item:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+            background: rgba(0, 102, 51, 0.5);
+        }
+        
+        .section-item {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .section-item:hover, .section-item.active {
+            background: rgba(0, 102, 51, 0.3);
+            border-left: 3px solid var(--amarillo);
+        }
+        
+        .menu-item {
+            transition: all 0.3s ease;
+            border-left: 2px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: rgba(0, 51, 102, 0.3);
+            border-left: 2px solid var(--amarillo);
+        }
+        
+        .subsection-list {
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        
+        .section-item.active .subsection-list {
+            max-height: 500px;
+            display: block;
+        }
+
+        @media (max-width: 1023px) {
+            .section-item.active .subsection-list {
+                max-height: none;
+                display: block;
+            }
+        }
+        
+        .section-item.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        
+        .hamburger-menu {
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        @media (min-width: 500px) {
+            .grid-layout {
+                grid-template-columns: 250px 1fr 1.3fr;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 26, 46, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--amarillo);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--verde-oscuro);
+        }
+        
+        .glow {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .glow:hover {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        }
+        
+        .ai-chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 400px;
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid var(--amarillo);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .ai-chat-header {
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--azul-oscuro));
+            color: var(--blanco);
+            padding: 10px 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .ai-message {
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .ai-user-message {
+            background: rgba(0, 102, 51, 0.3);
+            align-self: flex-end;
+            text-align: right;
+        }
+        
+        .ai-bot-message {
+            background: rgba(0, 51, 102, 0.3);
+            align-self: flex-start;
+        }
+        
+        .ai-chat-input {
+            display: flex;
+            padding: 10px;
+            background: rgba(26, 26, 46, 0.8);
+            border-top: 1px solid var(--amarillo);
+        }
+        
+        .ai-chat-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--amarillo);
+            border-radius: 4px;
+            background: rgba(26, 26, 46, 0.8);
+            color: var(--blanco);
+        }
+        
+        .ai-chat-input button {
+            margin-left: 10px;
+            padding: 8px 15px;
+            background: var(--verde-oscuro);
+            color: var(--blanco);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .ai-chat-input button:hover {
+            background: var(--amarillo);
+            color: var(--negro);
+        }
+        
+        .ai-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--verde-oscuro);
+            color: var(--blanco);
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+        
+        .ai-toggle-btn:hover {
+            background: var(--amarillo);
+            color: var(--negro);
+        }
+        
+        .form-container {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(0, 102, 51, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--amarillo);
+            font-weight: 500;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 51, 102, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 4px;
+            color: var(--blanco);
+            font-size: 0.875rem;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--amarillo);
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--azul-oscuro));
+            color: var(--blanco);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--amarillo), var(--verde-oscuro));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .certificate-container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 102, 51, 0.2);
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .certificate-title {
+            color: var(--amarillo);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .certificate-name {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            color: var(--blanco);
+        }
+        
+        .certificate-score {
+            font-size: 1.25rem;
+            margin: 1rem 0;
+            color: var(--amarillo);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .document-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="lg:hidden gradient-bg p-4 flex justify-between items-center sticky top-0 z-50">
+        <h1 class="text-xl font-bold">Patio de Contenedores 4.0</h1>
+        <button id="mobileMenuButton" class="text-white focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <div class="grid-layout min-h-screen flex flex-col lg:grid">
+        <aside class="hidden lg:block gradient-bg p-4 overflow-y-auto sticky top-0 h-screen">
+            <h1 class="text-2xl font-bold mb-8 text-center">Patio de Contenedores 4.0</h1>
+            <nav>
+                <ul class="space-y-2">
+                    <li class="section-item p-3 rounded-lg cursor-pointer active" data-section="logistics">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-ship mr-2"></i> Puertos Marítimos</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg active" data-subsection="terminals">
+                                <i class="fas fa-anchor mr-2"></i> Terminales
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="operations">
+                                <i class="fas fa-cogs mr-2"></i> Operaciones Portuarias
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="security">
+                                <i class="fas fa-shield-alt mr-2"></i> Seguridad Portuaria
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="section-item p-3 rounded-lg cursor-pointer" data-section="physical">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-cube mr-2"></i> Maqueta Física</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg" data-subsection="containermodel">
+                                <i class="fas fa-boxes mr-2"></i> Patio de Contenedores
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="section-item p-3 rounded-lg cursor-pointer" data-section="flexsim">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-project-diagram mr-2"></i> Flexsim</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg" data-subsection="containerflexsim">
+                                <i class="fas fa-boxes mr-2"></i> Patio de Contenedores
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="section-item p-3 rounded-lg cursor-pointer" data-section="container">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-box-open mr-2"></i> Patio de Contenedores</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg" data-subsection="howitworks">
+                                <i class="fas fa-cogs mr-2"></i> Cómo Funciona
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="standards">
+                                <i class="fas fa-book mr-2"></i> Normas y Estándares
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="knowledge">
+                                <i class="fas fa-graduation-cap mr-2"></i> Evaluación de Conocimiento
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="consultation">
+                                <i class="fas fa-comments mr-2"></i> Consultas y Sugerencias
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <aside class="mobile-menu fixed inset-y-0 left-0 w-64 gradient-bg p-4 z-40 lg:hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-xl font-bold">Content Viewer</h1>
+                <button id="closeMobileMenu" class="text-white focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li class="section-item p-3 rounded-lg cursor-pointer active" data-section="logistics">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-ship mr-2"></i> Puertos Marítimos</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg active" data-subsection="terminals">
+                                <i class="fas fa-anchor mr-2"></i> Terminales
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="operations">
+                                <i class="fas fa-cogs mr-2"></i> Operaciones Portuarias
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="security">
+                                <i class="fas fa-shield-alt mr-2"></i> Seguridad Portuaria
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="section-item p-3 rounded-lg cursor-pointer" data-section="physical">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-cube mr-2"></i> Maqueta Física</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg" data-subsection="containermodel">
+                                <i class="fas fa-boxes mr-2"></i> Patio de Contenedores
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="section-item p-3 rounded-lg cursor-pointer" data-section="flexsim">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-project-diagram mr-2"></i> Flexsim</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg" data-subsection="containerflexsim">
+                                <i class="fas fa-boxes mr-2"></i> Patio de Contenedores
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="section-item p-3 rounded-lg cursor-pointer" data-section="container">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-box-open mr-2"></i> Patio de Contenedores</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                        <ul class="subsection-list mt-2 ml-6 space-y-1">
+                            <li class="menu-item p-2 rounded-lg" data-subsection="howitworks">
+                                <i class="fas fa-cogs mr-2"></i> Cómo Funciona
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="standards">
+                                <i class="fas fa-book mr-2"></i> Normas y Estándares
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="knowledge">
+                                <i class="fas fa-graduation-cap mr-2"></i> Evaluación de Conocimiento
+                            </li>
+                            <li class="menu-item p-2 rounded-lg" data-subsection="consultation">
+                                <i class="fas fa-comments mr-2"></i> Consultas y Sugerencias
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="p-2 lg:p-3 col-span-1 lg:col-span-1 order-2 lg:order-none h-screen">
+            <div class="content-viewer rounded-xl p-3 h-full flex flex-col">
+                <h2 id="contentTitle" class="text-xl font-bold mb-3">Bienvenido al Visor de Contenidos</h2>
+                <div id="contentDescription" class="prose prose-invert max-w-none flex-grow">
+                    <p>Seleccione una categoría del menú para ver los contenidos teóricos aquí. Los archivos asociados aparecerán en el panel derecho.</p>
+                </div>
+            </div>
+        </main>
+
+        <div class="p-2 lg:p-3 flex flex-col h-full order-1 lg:order-none lg:col-span-1">
+            <div class="content-viewer rounded-xl flex-grow overflow-hidden">
+                <div id="mediaContainer" class="w-full h-[calc(100vh-120px)] lg:h-full flex items-center justify-center bg-gray-900 relative" style="min-height: 0;">
+                    <div id="dynamicContent" class="w-full h-full">
+                        <div class="text-center p-6">
+                            <i class="fas fa-exclamation-circle text-5xl mb-4 text-gray-600"></i>
+                            <p class="text-gray-400">No hay archivos disponibles para esta sección</p>
+                        </div>
+                    </div>
+                    <button id="fullscreenButton" class="fullscreen-btn" title="Pantalla completa">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="lg:mt-auto h-32 relative w-full">
+                <div class="carousel-wrapper relative w-full h-full">
+                    <div id="desktopCarousel" class="carousel-container h-full px-4"></div>
+                    <div id="carouselNav" class="flex justify-between absolute top-0 left-0 w-full h-full pointer-events-none">
+                        <button id="carouselPrev" class="carousel-nav prev pointer-events-auto" aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="carouselNext" class="carousel-nav next pointer-events-auto" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="carouselCounter" class="text-center text-sm text-gray-200 bg-black bg-opacity-50 rounded-full px-3 py-1 absolute bottom-2 right-2">
+                    <span id="currentItem">1</span> / <span id="totalItems">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Toggle Button -->
+    <button id="aiToggleBtn" class="ai-toggle-btn">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <!-- AI Chat Container -->
+    <div id="aiChatContainer" class="ai-chat-container" style="display: none;">
+        <div class="ai-chat-header">
+            <span>Asistente de Inteligencia Artificial</span>
+            <button id="closeAiChat" class="text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="aiMessages" class="ai-chat-messages">
+            <div class="ai-message ai-bot-message">
+                ¡Hola! Soy tu asistente de Inteligencia Artificial. ¿En qué puedo ayudarte con respecto al contenido que estás viendo?
+            </div>
+        </div>
+        <div class="ai-chat-input">
+            <input type="text" id="aiInput" placeholder="Escribe tu pregunta aquí...">
+            <button id="aiSendBtn">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const contentData = {
+            logistics: {
+                terminals: {
+                    theory: `
+                        <h2>Terminales Portuarias</h2>
+                        <p>Las terminales portuarias son instalaciones especializadas dentro de los puertos marítimos dedicadas al manejo eficiente de carga y pasajeros.</p>
+                        
+                        <div class="content-box">
+                            <h3>Tipos de terminales:</h3>
+                            <ul>
+                                <li>Terminal de contenedores</li>
+                                <li>Terminal de granel sólido</li>
+                                <li>Terminal de granel líquido</li>
+                                <li>Terminal de pasajeros</li>
+                                <li>Terminal RO-RO (Roll-On/Roll-Off)</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Componentes principales:</h3>
+                        <ul>
+                            <li>Muelles y embarcaderos</li>
+                            <li>Áreas de almacenamiento</li>
+                            <li>Grúas y equipos de carga</li>
+                            <li>Sistemas de transporte interno</li>
+                            <li>Instalaciones administrativas</li>
+                        </ul>
+
+                        <div class="content-box">
+                            <p><strong>Normas ISO aplicables:</strong> ISO 9001 (Gestión de Calidad), ISO 14001 (Gestión Ambiental), ISO 45001 (Seguridad y Salud Ocupacional)</p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'terminal-video',
+                            title: 'Terminales Portuarias',
+                            description: 'En este episodio de Full Container, exploramos a fondo qué es una terminal portuaria, cómo se diferencia del puerto, y por qué son piezas clave en el sistema logístico global.',
+                            path: 'https://youtu.be/b_3N1KkiM_o?si=haTKZtVY0bQ63r_b',
+                            thumbnail: 'https://img.youtube.com/vi/b_3N1KkiM_o/0.jpg',
+                            type: 'video'
+                        },
+                        {
+                            id: 'terminal-layout',
+                            title: 'Terminal Portuario',
+                            description: 'Planos y layouts de terminales portuarias.',
+                            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5OJmwuGUU9Fj6IC8uT8fFkBcpldZN56x0_Q&s',
+                            thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5OJmwuGUU9Fj6IC8uT8fFkBcpldZN56x0_Q&s',
+                            type: 'image'
+                        },
+                        {
+                            id: 'terminal-equipment',
+                            title: 'Proceso Logístico',
+                            description: 'EL-PROCESO-LOGISTICO-DENTRO-DEL-TERMINAL-PORTUARIO-DE-GUAYAQUIL-ANALISIS-DE-LOS-COSTOS-DE-SERVICIOS-PORTUARIOS',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EWPMHk71spNKiUpykOCc9VUB3cfP2uNwWPPKsLrN9MN9kQ?e=yGbEwM',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EWPMHk71spNKiUpykOCc9VUB3cfP2uNwWPPKsLrN9MN9kQ?e=yGbEwM',
+                            type: 'document'
+                        },
+                        {
+                            id: 'iso-9001',
+                            title: 'Sector portuario',
+                            description: 'sector-portuario-en-el-ecuador.',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EbhMtSWNd2NPqb1c9zz7BScBPnRgNULDpwVKN20o06KnGg?e=bUoiEH',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EbhMtSWNd2NPqb1c9zz7BScBPnRgNULDpwVKN20o06KnGg?e=bUoiEH',
+                            type: 'document'
+                        }
+                    ]
+                },
+                operations: {
+                    theory: `
+                        <h2>Operaciones Portuarias</h2>
+                        <p>Las operaciones portuarias comprenden todas las actividades necesarias para el manejo eficiente de buques, carga y pasajeros en un puerto marítimo.</p>
+                        
+                        <div class="content-box">
+                            <h3>Principales operaciones:</h3>
+                            <ul>
+                                <li>Atraque y desatraque de buques</li>
+                                <li>Manejo de carga general y contenedores</li>
+                                <li>Operaciones de granel sólido y líquido</li>
+                                <li>Gestión de pasajeros</li>
+                                <li>Mantenimiento de infraestructuras</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Factores críticos:</h3>
+                        <ul>
+                            <li>Seguridad operacional</li>
+                            <li>Eficiencia en tiempos de espera</li>
+                            <li>Coordinación entre actores</li>
+                            <li>Cumplimiento normativo</li>
+                            <li>Gestión ambiental</li>
+                        </ul>
+
+                        <div class="content-box">
+                            <p><strong>Normas ISO aplicables:</strong> ISO 9001 (Gestión de Calidad), ISO 14001 (Gestión Ambiental), ISO 45001 (Seguridad y Salud Ocupacional), ISO 50001 (Eficiencia Energética)</p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'operations-system',
+                            title: 'Sistema de Operaciones',
+                            description: 'Video explicativo del sistema de gestión de operaciones portuarias.',
+                            path: 'https://youtu.be/hn92JB4CRis?si=wX-NlZS2Wt80NULc',
+                            thumbnail: 'https://img.youtube.com/vi/hn92JB4CRis/0.jpg',
+                            type: 'video'
+                        },
+                        {
+                            id: 'operations-process',
+                            title: 'Procesos',
+                            description: 'Diagramas de flujo de procesos operacionales portuarios.',
+                            path: 'https://upecedu-my.sharepoint.com/:i:/g/personal/jenifer_guamialama_upec_edu_ec/ETouh52j9ZhHpG1rR8awL4gBmaw3_bPQFmKUwqeOOPVFFA?e=SV6X3M',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:i:/g/personal/jenifer_guamialama_upec_edu_ec/ETouh52j9ZhHpG1rR8awL4gBmaw3_bPQFmKUwqeOOPVFFA?e=SV6X3M',
+                            type: 'image'
+                        },
+                        {
+                            id: 'operations-control',
+                            title: 'Manual de servicio',
+                            description: 'Manual-de-Servicio-CGSA-Revision-Marzo-2022',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EbNLqOUnD_pCkr74EaZjEAwBUPgRs_wx8wB8OWfY9WzLPQ?e=wpuo1W',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EbNLqOUnD_pCkr74EaZjEAwBUPgRs_wx8wB8OWfY9WzLPQ?e=wpuo1W',
+                            type: 'document'
+                        },
+                        {
+                            id: 'iso-14001',
+                            title: 'Manual de operaciones',
+                            description: 'NIVEL1_Manual_OPERACIONES_SERVICIOS_PORTUARIOS',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EfyKwKwMef1InpStjTk82VIBT1JcU1HG_6xrHn9uLHMFsQ?e=mJwyWf',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EfyKwKwMef1InpStjTk82VIBT1JcU1HG_6xrHn9uLHMFsQ?e=mJwyWf',
+                            type: 'document'
+                        }
+                    ]
+                },
+                security: {
+                    theory: `
+                        <h2>Seguridad Portuaria</h2>
+                        <p>La seguridad portuaria es fundamental para proteger las instalaciones, personal, buques y carga contra amenazas terroristas, delincuenciales y accidentes.</p>
+                        
+                        <div class="content-box">
+                            <h3>Componentes de seguridad:</h3>
+                            <ul>
+                                <li>Control de acceso y perímetro</li>
+                                <li>Vigilancia y monitoreo</li>
+                                <li>Inspección de carga y buques</li>
+                                <li>Respuesta a emergencias</li>
+                                <li>Coordinación con autoridades</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Marco normativo:</h3>
+                        <ul>
+                            <li>Código ISPS (International Ship and Port Facility Security)</li>
+                            <li>Regulaciones MARPOL</li>
+                            <li>Convenio SOLAS</li>
+                            <li>Normas locales y nacionales</li>
+                        </ul>
+
+                        <div class="content-box">
+                            <p><strong>Normas ISO aplicables:</strong> ISO 28000 (Gestión de Seguridad en la Cadena de Suministro), ISO 31000 (Gestión de Riesgos), ISO 45001 (Seguridad y Salud Ocupacional)</p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'security-video',
+                            title: 'Seguridad',
+                            description: 'Introducción a las normas de seguridad para contratistas APM Terminals Algeciras',
+                            path: 'https://youtu.be/VoEJfBSjRSY?si=yNKz39DD1tTyZ2t0',
+                            thumbnail: 'https://img.youtube.com/vi/VoEJfBSjRSY/0.jpg',
+                            type: 'video'
+                        },
+                        {
+                            id: 'operations-process',
+                            title: 'Seguridad portuaria',
+                            description: 'Seguridad portuaria',
+                            path: 'https://static.esmartcity.es/media/2022/04/sistem-ofrece-solucion-integral-modular-para-seguridad-portuaria.png',
+                            thumbnail: 'https://static.esmartcity.es/media/2022/04/sistem-ofrece-solucion-integral-modular-para-seguridad-portuaria.png',
+                            type: 'image'
+                        },
+                        {
+                            id: 'operations-control',
+                            title: 'Guia de seguridad',
+                            description: 'Guia-de-seguridad-Industrial-y-Ambiente-de-Contecon-Guayaquil-S.A.',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/ETKR6eEu4I1FoFayS1WtmXQB6v-xVq87XvpHhxorxz52_Q?e=5s5ae9',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/ETKR6eEu4I1FoFayS1WtmXQB6v-xVq87XvpHhxorxz52_Q?e=5s5ae9',
+                            type: 'document'
+                        },
+                        {
+                            id: 'iso-14001',
+                            title: 'Seguridad en los puertos',
+                            description: 'Seguridad y salud en los puertos',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EXoF9snjQhlGvb1TrUe3ct8BmSU0gEjTc_vkeYL3fBk7UA?e=ieb4If',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EXoF9snjQhlGvb1TrUe3ct8BmSU0gEjTc_vkeYL3fBk7UA?e=ieb4If',
+                            type: 'document'
+                        }
+                    ]
+                }
+            },
+            physical: {
+                containermodel: {
+                    theory: `
+                        <h2>Maqueta del Patio de Contenedores</h2>
+                        <p>La maqueta del patio de contenedores es una representación detallada de las áreas de almacenamiento y manejo de contenedores dentro de un terminal portuario.</p>
+                        
+                        <div class="content-box">
+                            <h3>Elementos representados:</h3>
+                            <ul>
+                                <li>Zonas de almacenamiento por tipo de contenedor</li>
+                                <li>Vías de circulación para equipos de manejo</li>
+                                <li>Áreas de inspección y mantenimiento</li>
+                                <li>Sistemas de identificación y seguimiento</li>
+                                <li>Infraestructura de servicios auxiliares</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Beneficios educativos:</h3>
+                        <ul>
+                            <li>Comprensión de flujos logísticos</li>
+                            <li>Optimización de layouts</li>
+                            <li>Entrenamiento en operaciones</li>
+                            <li>Evaluación de eficiencia espacial</li>
+                        </ul>
+
+                        <div class="content-box">
+                            <p><strong>Normas ISO aplicables:</strong> ISO 9001 (Gestión de Calidad), ISO 14001 (Gestión Ambiental), ISO 50001 (Eficiencia Energética)</p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'container-model-video',
+                            title: 'Operación del Patio',
+                            description: 'Video explicativo de operaciones en patio de contenedores.',
+                            path: 'https://upecedu-my.sharepoint.com/:v:/g/personal/jenifer_guamialama_upec_edu_ec/Edzvr0qUmQNAt4XTbwYHtwEBVMB33Jgmvk6H9EtNdZtiGQ?e=OGzbZH',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:v:/g/personal/jenifer_guamialama_upec_edu_ec/Edzvr0qUmQNAt4XTbwYHtwEBVMB33Jgmvk6H9EtNdZtiGQ?e=OGzbZH',
+                            type: 'video'
+                        },
+                        {
+                            id: 'operations-process',
+                            title: 'Procesos',
+                            description: 'Diagramas de flujo de procesos operacionales portuarios.',
+                            path: 'https://upecedu-my.sharepoint.com/:i:/g/personal/jenifer_guamialama_upec_edu_ec/EYo_oTBbcDxOgMaxqFoftXkBpgJx9A462g7FHjIQUNldgQ?e=efFux4',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:i:/g/personal/jenifer_guamialama_upec_edu_ec/EYo_oTBbcDxOgMaxqFoftXkBpgJx9A462g7FHjIQUNldgQ?e=efFux4',
+                            type: 'image'
+                        },
+                        {
+                            id: 'container-model-layout',
+                            title: 'Diseño del Patio',
+                            description: 'Anrango_Guamialama_Pascal_Actividad 2 – Entrega de Maqueta a Escala, informe',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EcdgBAfYsg1Bt5yoGzPQzXQB_mBSoX48PUYYGKW7JRUvFA?e=tXdOXS',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EcdgBAfYsg1Bt5yoGzPQzXQB_mBSoX48PUYYGKW7JRUvFA?e=tXdOXS',
+                            type: 'document'
+                        }
+                    ]
+                }
+            },
+            flexsim: {
+                containerflexsim: {
+                    theory: `
+                        <h2>Simulación del Patio de Contenedores con Flexsim</h2>
+                        <p>La simulación del patio de contenedores permite analizar y optimizar las operaciones de almacenamiento, manejo y movimiento de contenedores.</p>
+                        
+                        <div class="content-box">
+                            <h3>Aspectos simulados:</h3>
+                            <ul>
+                                <li>Flujos de entrada y salida de contenedores</li>
+                                <li>Asignación de espacios de almacenamiento</li>
+                                <li>Movimientos de equipos de manejo</li>
+                                <li>Tiempos de operación y espera</li>
+                                <li>Capacidad de almacenamiento</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Resultados obtenidos:</h3>
+                        <ul>
+                            <li>Identificación de ineficiencias</li>
+                            <li>Optimización de layouts</li>
+                            <li>Reducción de tiempos operacionales</li>
+                            <li>Mejora en utilización de recursos</li>
+                        </ul>
+
+                        <div class="content-box">
+                            <p><strong>Normas ISO aplicables:</strong> ISO 9001 (Gestión de Calidad), ISO 50001 (Eficiencia Energética), ISO 45001 (Seguridad y Salud Ocupacional)</p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'iso-50001-container',
+                            title: 'Flexsim patio de contenedores.',
+                            description: 'Flexsim patio de contenedores.',
+                            path: 'https://upecedu-my.sharepoint.com/:i:/g/personal/jenifer_guamialama_upec_edu_ec/Eb8F8cNaMhxIhy5uH3ORFDUBHbmRdJ6XtKBKeqQLCzL36A?e=m9KNtO',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:i:/g/personal/jenifer_guamialama_upec_edu_ec/Eb8F8cNaMhxIhy5uH3ORFDUBHbmRdJ6XtKBKeqQLCzL36A?e=m9KNtO',
+                            type: 'image'
+                        },
+                        {
+                            id: 'container-flexsim-report',
+                            title: 'Informe de Resultados',
+                            description: 'Informe detallado de resultados de simulación.',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EdQRyvOMhb9AtFoGBnAktj4BeUCJbMhJuuBFr5-zFOhSoQ?e=3KhC6k',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EdQRyvOMhb9AtFoGBnAktj4BeUCJbMhJuuBFr5-zFOhSoQ?e=3KhC6k',
+                            type: 'document'
+                        },
+                        {
+                            id: 'container-flexsim-report2',
+                            title: 'Informe de Resultados 2',
+                            description: 'Informe detallado de resultados de simulación.',
+                            path: 'https://upecedu-my.sharepoint.com/:u:/g/personal/jenifer_guamialama_upec_edu_ec/ERro8qMbp9NLibYaEy8G12QBaKmy4jc3k-5_1nyXnA0wTw?e=sgJuc4',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:u:/g/personal/jenifer_guamialama_upec_edu_ec/ERro8qMbp9NLibYaEy8G12QBaKmy4jc3k-5_1nyXnA0wTw?e=sgJuc4',
+                            type: 'document'
+                        }
+                    ]
+                }
+            },
+            container: {
+                howitworks: {
+                    theory: `
+                        <h2>Cómo Funciona el Patio de Contenedores</h2>
+                        <p>El patio de contenedores es una instalación crítica en los terminales portuarios donde se almacenan temporalmente los contenedores antes, durante y después de su transporte.</p>
+                        
+                        <div class="content-box">
+                            <h3>Funcionamiento básico:</h3>
+                            <ul>
+                                <li><strong>Recepción:</strong> Los contenedores llegan al patio desde buques o camiones</li>
+                                <li><strong>Clasificación:</strong> Se organizan según tipo, destino y prioridad</li>
+                                <li><strong>Almacenamiento:</strong> Se ubican estratégicamente en bloques designados</li>
+                                <li><strong>Movimiento:</strong> Equipos especializados trasladan contenedores según necesidades</li>
+                                <li><strong>Despacho:</strong> Se entregan a buques, trenes o camiones para su transporte final</li>
+                            </ul>
+                        </div>
+                        
+                        <h3>Componentes clave:</h3>
+                        <ul>
+                            <li><strong>Bloques de almacenamiento:</strong> Áreas organizadas en filas y columnas</li>
+                            <li><strong>Vías de circulación:</strong> Espacios para el movimiento de equipos de manejo</li>
+                            <li><strong>Equipos de manejo:</strong> Grúas pórtico, reach stackers, straddle carriers</li>
+                            <li><strong>Sistema de identificación:</strong> Código QR, RFID, GPS para seguimiento</li>
+                            <li><strong>Área de inspección:</strong> Zona para revisiones técnicas y aduaneras</li>
+                        </ul>
+
+                        <div class="content-box">
+                            <h3>Operaciones diarias:</h3>
+                            <ul>
+                                <li>Inventario continuo mediante tecnología IoT</li>
+                                <li>Optimización de rutas de movimiento de equipos</li>
+                                <li>Gestión de espacio disponible en tiempo real</li>
+                                <li>Coordinación con otras áreas del terminal</li>
+                                <li>Cumplimiento de normativas de seguridad y medio ambiente</li>
+                            </ul>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'container-model-video',
+                            title: 'Operación del Patio',
+                            description: 'FUNCIONAMIENTO DE UNA TERMINAL DE CONTENEDORES',
+                            path: 'https://youtu.be/SA5hhk9_ER8?si=sZwBU5yd3nfSrBUf',
+                            thumbnail: 'https://img.youtube.com/vi/SA5hhk9_ER8/0.jpg',
+                            type: 'video'
+                        },
+                        {
+                            id: 'operations-process',
+                            title: 'Procesos',
+                            description: 'Diagramas de flujo de procesos operacionales portuarios.',
+                            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvDT7pTvIAtDrEOawvodHCGoWIOh0ysHYorQ&s',
+                            thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvDT7pTvIAtDrEOawvodHCGoWIOh0ysHYorQ&s',
+                            type: 'image'
+                        },
+                        {
+                            id: 'iso-14001-container',
+                            title: 'Patio de contenedores',
+                            description: 'PATIO DE CONTENEDORES',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/Ee5wxC7U7hZLkdNo7rxyXLABOFBCb2czBaWMTZGadr_MWg?e=d8Gjso',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/Ee5wxC7U7hZLkdNo7rxyXLABOFBCb2czBaWMTZGadr_MWg?e=d8Gjso',
+                            type: 'document'
+                        }
+                    ]
+                },
+                standards: {
+                    theory: `
+                        <h2>Normas y Estándares en el Patio de Contenedores</h2>
+                        <p>Las normas y estándares internacionales son fundamentales para garantizar la calidad, seguridad y eficiencia en las operaciones del patio de contenedores. Estas normas proporcionan un marco estructurado que permite la estandarización de procesos, mejora continua y cumplimiento de regulaciones globales.</p>
+                        
+                        <div class="content-box">
+                            <h3>Importancia de las normas en el patio de contenedores:</h3>
+                            <ul>
+                                <li><strong>Calidad operativa:</strong> Garantizan procesos estandarizados y consistentes en todas las operaciones</li>
+                                <li><strong>Seguridad:</strong> Establecen protocolos para proteger a los trabajadores y prevenir accidentes</li>
+                                <li><strong>Sostenibilidad:</strong> Promueven prácticas ambientales responsables y eficiencia energética</li>
+                                <li><strong>Competitividad:</strong> Mejoran la eficiencia operativa y reducen costos</li>
+                                <li><strong>Integración global:</strong> Facilitan el comercio internacional al estandarizar procesos</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="content-box">
+                            <h3>Principales normas aplicables:</h3>
+                            <ul>
+                                <li><strong>ISO 9001:</strong> Gestión de calidad en procesos operativos</li>
+                                <li><strong>ISO 14001:</strong> Gestión ambiental y sostenibilidad</li>
+                                <li><strong>ISO 45001:</strong> Seguridad y salud ocupacional</li>
+                                <li><strong>ISO 50001:</strong> Eficiencia energética en equipos y sistemas</li>
+                                <li><strong>ISO 28000:</strong> Seguridad en la cadena de suministro</li>
+                            </ul>
+                        </div>
+                        
+                        <p>La implementación de estas normas no solo mejora el desempeño del patio de contenedores, sino que también fortalece la reputación del terminal portuario ante clientes, autoridades y la comunidad internacional.</p>
+                    `,
+                    files: [
+                        {
+                            id: 'container-model-layout',
+                            title: 'ISO 9001:2015',
+                            description: 'NOM_ISO_9001-2015.',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EeXVbqBlA7xOllxz2CGFdOgBEW9cmxcZplNM_wWDf2Eq6Q?e=kvUtJV',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EeXVbqBlA7xOllxz2CGFdOgBEW9cmxcZplNM_wWDf2Eq6Q?e=kvUtJV',
+                            type: 'document'
+                        },
+                        {
+                            id: 'container-model-layout2',
+                            title: 'ISO 14001:2015',
+                            description: 'NORMA ISO 14001.2015.',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/ERe0pNE0VJxIsuLDu4Nhh_EBWCk41vPD81WKuwi9evYnPw?e=70avgu',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/ERe0pNE0VJxIsuLDu4Nhh_EBWCk41vPD81WKuwi9evYnPw?e=70avgu',
+                            type: 'document'
+                        },
+                        {
+                            id: 'iso-14001-container',
+                            title: 'ISO 14001:2018',
+                            description: 'Norma_ISO_45001_2018',
+                            path: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EUeAlsIj889FhJjHHp0gmKwBOaQQBzdYxnxsrVhYmfmJLg?e=9WpSOt',
+                            thumbnail: 'https://upecedu-my.sharepoint.com/:b:/g/personal/jenifer_guamialama_upec_edu_ec/EUeAlsIj889FhJjHHp0gmKwBOaQQBzdYxnxsrVhYmfmJLg?e=9WpSOt',
+                            type: 'document'
+                        }
+                    ]
+                },
+                knowledge: {
+                    theory: `
+                        <h2>Evaluación de Conocimiento del Patio de Contenedores</h2>
+                        <p>Completa esta evaluación para demostrar tu comprensión del funcionamiento y gestión del patio de contenedores. Al finalizar, recibirás un certificado si alcanzas la calificación mínima requerida.</p>
+                        
+                        <div class="form-container" id="evaluationForm">
+                            <h3 class="text-lg font-semibold mb-4">Cuestionario de Evaluación</h3>
+                            
+                            <form id="knowledgeTest">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre Completo:</label>
+                                    <input type="text" class="form-input" id="studentName" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Correo Electrónico:</label>
+                                    <input type="email" class="form-input" id="studentEmail" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">1. ¿Cuál es la principal función del patio de contenedores?</label>
+                                    <select class="form-select" id="question1" required>
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="a">Almacenar mercancías indefinidamente</option>
+                                        <option value="b">Organizar y gestionar el movimiento temporal de contenedores</option>
+                                        <option value="c">Fabricar nuevos contenedores</option>
+                                        <option value="d">Reparar contenedores dañados</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">2. ¿Qué tipo de equipo se utiliza comúnmente para mover contenedores en el patio?</label>
+                                    <select class="form-select" id="question2" required>
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="a">Camiones de reparto</option>
+                                        <option value="b">Grúas pórtico y reach stackers</option>
+                                        <option value="c">Montacargas pequeños</option>
+                                        <option value="d">Grúas móviles convencionales</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">3. ¿Cuál es un beneficio clave de usar tecnología de identificación como RFID en el patio?</label>
+                                    <select class="form-select" id="question3" required>
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="a">Reducir el peso de los contenedores</option>
+                                        <option value="b">Mejorar el seguimiento y visibilidad en tiempo real</option>
+                                        <option value="c">Hacer los contenedores más coloridos</option>
+                                        <option value="d">Eliminar la necesidad de personal</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">4. ¿Qué significa "optimización de espacio" en el contexto del patio de contenedores?</label>
+                                    <textarea class="form-textarea" id="question4" rows="3" placeholder="Describe brevemente..." required></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">5. Menciona dos factores críticos para la eficiencia operativa en un patio de contenedores:</label>
+                                    <textarea class="form-textarea" id="question5" rows="3" placeholder="Enumera y explica brevemente..." required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn-primary w-full">Enviar Evaluación</button>
+                            </form>
+                        </div>
+                        
+                        <div id="certificateContainer" class="certificate-container hidden">
+                            <h2 class="certificate-title">CERTIFICADO DE EVALUACIÓN</h2>
+                            <p>Este certificado se otorga a:</p>
+                            <h3 class="certificate-name" id="certName"></h3>
+                            <p>Por haber completado satisfactoriamente la evaluación de conocimiento</p>
+                            <p>sobre el funcionamiento del Patio de Contenedores 4.0</p>
+                            <p class="certificate-score">Calificación obtenida: <span id="certScore"></span>%</span></p>
+                            <p>Fecha: <span id="certDate"></span></p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'operations-process',
+                            title: 'EVALUACIÓN',
+                            description: 'Diagramas de flujo de procesos operacionales portuarios.',
+                            path: 'https://www.editorialmd.com/wp-content/uploads/Evaluacion-Formativa-1.png',
+                            thumbnail: 'https://www.editorialmd.com/wp-content/uploads/Evaluacion-Formativa-1.png',
+                            type: 'image'
+                        }
+                    ]
+                },
+                consultation: {
+                    theory: `
+                        <h2>Consultas y Sugerencias</h2>
+                        <p>Tu opinión es importante para mejorar nuestra plataforma de aprendizaje. Envíanos tus consultas, sugerencias o comentarios sobre el contenido del patio de contenedores.</p>
+                        
+                        <div class="form-container">
+                            <h3 class="text-lg font-semibold mb-4">Formulario de Consultas y Sugerencias</h3>
+                            
+                            <form id="consultationForm">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre:</label>
+                                    <input type="text" class="form-input" id="consultName" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Correo Electrónico:</label>
+                                    <input type="email" class="form-input" id="consultEmail" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Tipo de consulta:</label>
+                                    <select class="form-select" id="consultType" required>
+                                        <option value="">Selecciona una opción</option>
+                                        <option value="consulta">Consulta técnica</option>
+                                        <option value="sugerencia">Sugerencia de mejora</option>
+                                        <option value="comentario">Comentario general</option>
+                                        <option value="problema">Reporte de problema</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Mensaje:</label>
+                                    <textarea class="form-textarea" id="consultMessage" rows="5" placeholder="Escribe tu consulta o sugerencia aquí..." required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn-primary w-full">Enviar Consulta</button>
+                            </form>
+                            
+                            <div id="consultSuccess" class="hidden mt-4 p-3 bg-green-800 rounded text-center">
+                                <i class="fas fa-check-circle text-xl mr-2"></i>
+                                <span>¡Consulta enviada exitosamente! Nos pondremos en contacto contigo pronto.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="content-box mt-6">
+                            <h3>Contacto Directo:</h3>
+                            <p><i class="fas fa-envelope mr-2"></i> jenifer.guamialama@upec.edu.ec</p>
+                            <p><i class="fas fa-phone mr-2"></i> +593 98 511 3566</p>
+                            <p><i class="fab fa-whatsapp mr-2"></i> +593 98 511 3566</p>
+                        </div>
+                    `,
+                    files: [
+                        {
+                            id: 'operations-process',
+                            title: 'Preguntas',
+                            description: 'Diagramas de flujo de procesos operacionales portuarios.',
+                            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU0ouqt8zca_NrluEQY9DRltC7W8mBAwpL5Q&s',
+                            thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU0ouqt8zca_NrluEQY9DRltC7W8mBAwpL5Q&s',
+                            type: 'image'
+                        }
+                    ]
+                
+                }
+            }
+        };
+                function convertirYoutubeEmbed() {
+    for (const section in contentData) {
+        for (const subsection in contentData[section]) {
+            const files = contentData[section][subsection].files;
+
+            files.forEach(file => {
+                if (file.type === "video" && file.path.includes("youtu")) {
+                    let videoId = "";
+
+                    if (file.path.includes("youtu.be")) {
+                        videoId = file.path.split("/").pop().split("?")[0];
+                    } 
+                    else if (file.path.includes("youtube.com")) {
+                        const urlParams = new URL(file.path).searchParams;
+                        videoId = urlParams.get("v");
+                    }
+
+                    if (videoId) {
+                        file.path = "https://www.youtube.com/embed/" + videoId;
+                    }
+                }
+            });
+        }
+    }
+}
+
+// Ejecutar automáticamente al iniciar
+convertirYoutubeEmbed();
+
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const contentTitle = document.getElementById('contentTitle');
+        const contentDescription = document.getElementById('contentDescription');
+        const mediaContainer = document.getElementById('mediaContainer');
+        const desktopCarousel = document.getElementById('desktopCarousel');
+        const mobileCarousel = document.getElementById('mobileCarousel');
+        
+        let currentSection = 'logistics';
+        let currentSubsection = 'terminals';
+        let currentContent = null;
+
+        // AI Chat Elements
+        const aiToggleBtn = document.getElementById('aiToggleBtn');
+        const aiChatContainer = document.getElementById('aiChatContainer');
+        const closeAiChat = document.getElementById('closeAiChat');
+        const aiMessages = document.getElementById('aiMessages');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+
+        function init() {
+            setupEventListeners();
+            document.querySelector('.section-item').classList.add('active');
+            document.querySelector('.menu-item').classList.add('active');
+            loadSubsection(currentSection, currentSubsection);
+            
+            // Setup form event listeners
+            setupFormEventListeners();
+        }
+
+        function setupEventListeners() {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('open');
+            });
+
+            closeMobileMenu.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+
+            document.querySelectorAll('.section-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.menu-item')) return;
+                    
+                    const section = item.dataset.section;
+                    
+                    document.querySelectorAll('.section-item').forEach(i => {
+                        if (i !== item) i.classList.remove('active');
+                    });
+                    item.classList.toggle('active');
+                    
+                    if (window.innerWidth < 500) {
+                        const subsections = item.querySelectorAll('.menu-item');
+                        subsections.forEach(sub => sub.classList.remove('active'));
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const subsection = item.dataset.subsection;
+                    
+                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    const section = item.closest('.section-item').dataset.section;
+                    currentSection = section;
+                    currentSubsection = subsection;
+                    
+                    loadSubsection(section, subsection);
+                    
+                    if (window.innerWidth < 500) {
+                        mobileMenu.classList.remove('open');
+                    }
+                });
+            });
+
+            // AI Chat Event Listeners
+            aiToggleBtn.addEventListener('click', () => {
+                aiChatContainer.style.display = aiChatContainer.style.display === 'none' ? 'flex' : 'none';
+            });
+
+            closeAiChat.addEventListener('click', () => {
+                aiChatContainer.style.display = 'none';
+            });
+
+            aiSendBtn.addEventListener('click', sendAiMessage);
+            aiInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendAiMessage();
+            });
+        }
+
+        function setupFormEventListeners() {
+            // Knowledge test form
+            const knowledgeTestForm = document.getElementById('knowledgeTest');
+            if (knowledgeTestForm) {
+                knowledgeTestForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    evaluateKnowledgeTest();
+                });
+            }
+            
+            // Consultation form
+            const consultationForm = document.getElementById('consultationForm');
+            if (consultationForm) {
+                consultationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitConsultation();
+                });
+            }
+        }
+
+        function evaluateKnowledgeTest() {
+            // Get form values
+            const studentName = document.getElementById('studentName').value;
+            const studentEmail = document.getElementById('studentEmail').value;
+            const q1 = document.getElementById('question1').value;
+            const q2 = document.getElementById('question2').value;
+            const q3 = document.getElementById('question3').value;
+            const q4 = document.getElementById('question4').value;
+            const q5 = document.getElementById('question5').value;
+            
+            // Calculate score (simple scoring for demo)
+            let score = 0;
+            if (q1 === 'b') score += 20;
+            if (q2 === 'b') score += 20;
+            if (q3 === 'b') score += 20;
+            if (q4.toLowerCase().includes('espacio') || q4.toLowerCase().includes('almacenamiento')) score += 10;
+            if (q5.toLowerCase().includes('tiempo') || q5.toLowerCase().includes('eficiencia')) score += 10;
+            
+            // Minimum score to pass
+            const passScore = 70;
+            
+            // Display certificate
+            const evaluationForm = document.getElementById('evaluationForm');
+            const certificateContainer = document.getElementById('certificateContainer');
+            const certName = document.getElementById('certName');
+            const certScore = document.getElementById('certScore');
+            const certDate = document.getElementById('certDate');
+            
+            certName.textContent = studentName;
+            certScore.textContent = score;
+            certDate.textContent = new Date().toLocaleDateString('es-ES');
+            
+            evaluationForm.classList.add('hidden');
+            certificateContainer.classList.remove('hidden');
+            
+            // In a real implementation, you would send the data to Google Sheets here
+            console.log('Sending evaluation results to Google Sheets:', {
+                name: studentName,
+                email: studentEmail,
+                score: score,
+                date: new Date().toISOString()
+            });
+        }
+
+        function submitConsultation() {
+            // Get form values
+            const consultName = document.getElementById('consultName').value;
+            const consultEmail = document.getElementById('consultEmail').value;
+            const consultType = document.getElementById('consultType').value;
+            const consultMessage = document.getElementById('consultMessage').value;
+            
+            // Show success message
+            const successMessage = document.getElementById('consultSuccess');
+            successMessage.classList.remove('hidden');
+            
+            // Reset form
+            document.getElementById('consultationForm').reset();
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 5000);
+            
+            // In a real implementation, you would send the data to Google Sheets here
+            console.log('Sending consultation to Google Sheets:', {
+                name: consultName,
+                email: consultEmail,
+                type: consultType,
+                message: consultMessage,
+                date: new Date().toISOString()
+            });
+        }
+
+        async function sendAiMessage() {
+            const message = aiInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            aiInput.value = '';
+
+            // Show typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'ai-message ai-bot-message';
+            typingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pensando...';
+            aiMessages.appendChild(typingIndicator);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+
+            try {
+                // Simulate AI response (in a real implementation, this would call the OpenAI API)
+                const response = await simulateAiResponse(message);
+                
+                // Remove typing indicator
+                aiMessages.removeChild(typingIndicator);
+                
+                // Add AI response to chat
+                addMessageToChat(response, 'bot');
+            } catch (error) {
+                // Remove typing indicator
+                aiMessages.removeChild(typingIndicator);
+                
+                // Add error message
+                addMessageToChat('Lo siento, ocurrió un error al procesar tu solicitud.', 'bot');
+            }
+        }
+
+        function addMessageToChat(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `ai-message ai-${sender}-message`;
+            messageElement.textContent = message;
+            aiMessages.appendChild(messageElement);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+
+        // Simulate AI response (replace with actual API call in production)
+        async function simulateAiResponse(userMessage) {
+            // This is a placeholder - in a real implementation, you would call the OpenAI API
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const responses = [
+                        "Basado en el contenido que estás viendo, puedo proporcionarte información detallada sobre puertos marítimos y sus operaciones.",
+                        "La simulación digital es una herramienta poderosa para optimizar procesos en patios de contenedores.",
+                        "Las normas ISO son fundamentales para garantizar la calidad en todas las operaciones portuarias.",
+                        "La inteligencia artificial está revolucionando la forma en que gestionamos los puertos y terminales.",
+                        "¿Te gustaría saber más sobre algún aspecto específico de los puertos marítimos?"
+                    ];
+                    resolve(responses[Math.floor(Math.random() * responses.length)]);
+                }, 1000);
+            });
+        }
+
+        function getSectionName(section) {
+            const names = {
+                logistics: 'Puertos Marítimos',
+                physical: 'Maqueta Física',
+                flexsim: 'Flexsim',
+                container: 'Patio de Contenedores'
+            };
+            return names[section] || section;
+        }
+
+        function getSubsectionName(subsection) {
+            const names = {
+                terminals: 'Terminales',
+                operations: 'Operaciones Portuarias',
+                security: 'Seguridad Portuaria',
+                containermodel: 'Patio de Contenedores',
+                containerflexsim: 'Patio de Contenedores',
+                howitworks: 'Cómo Funciona',
+                standards: 'Normas y Estándares',
+                knowledge: 'Evaluación de Conocimiento',
+                consultation: 'Consultas y Sugerencias'
+            };
+            return names[subsection] || subsection;
+        }
+
+        function loadSubsection(section, subsection) {
+            const subsectionData = contentData[section][subsection];
+            
+            contentTitle.textContent = `${getSectionName(section)} - ${getSubsectionName(subsection)}`;
+            contentDescription.innerHTML = subsectionData.theory;
+            
+            if (window.innerWidth < 500) {
+                document.querySelector(`.section-item[data-section="${section}"]`).classList.add('active');
+            }
+            
+            desktopCarousel.innerHTML = '';
+            
+            subsectionData.files.forEach(item => {
+                const carouselItem = createCarouselItem(item);
+                desktopCarousel.appendChild(carouselItem);
+            });
+            
+            setTimeout(initCarousel, 100);
+            
+            if (subsectionData.files.length === 0) {
+                mediaContainer.innerHTML = `
+                    <div class="text-center p-6">
+                        <i class="fas fa-exclamation-circle text-5xl mb-4 text-gray-600"></i>
+                        <p class="text-gray-400">No hay archivos disponibles para esta sección</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createCarouselItem(item) {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'carousel-item bg-gray-800 rounded-lg overflow-hidden cursor-pointer glow transition-all duration-300 flex flex-col items-center justify-center p-4';
+            itemElement.dataset.id = item.id;
+            
+            itemElement.innerHTML = `
+                <div class="text-xl mb-1">
+                    <i class="fas ${getContentIcon(item.type)}"></i>
+                </div>
+                <div class="text-center px-1">
+                    <h4 class="text-xs font-semibold">${item.title}</h4>
+                </div>
+            `;
+            
+            itemElement.addEventListener('click', () => loadContent(item));
+            
+            return itemElement;
+        }
+
+        function loadContent(content) {
+            currentContent = content;
+            
+            const wasFullscreen = !!document.fullscreenElement;
+            
+            const dynamicContent = document.getElementById('dynamicContent');
+            dynamicContent.innerHTML = '';
+            
+            const fsIcon = fullscreenButton.querySelector('i');
+            fsIcon.className = `fas ${wasFullscreen ? 'fa-compress' : 'fa-expand'}`;
+            
+            switch(content.type) {
+                case 'video':
+                    dynamicContent.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center">
+                            <iframe src="${content.path.replace('watch?v=', 'embed/')}" class="w-full h-full max-w-4xl" frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                        </div>
+                    `;
+                    break;
+                case 'image':
+                    dynamicContent.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center p-4">
+                            <img src="${content.path}" alt="${content.title}" class="max-w-full max-h-full object-contain">
+                        </div>
+                    `;
+                    break;
+                case 'panorama':
+                    dynamicContent.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-globe-americas text-5xl mb-4 text-gray-600"></i>
+                                <p class="text-gray-400">360° Viewer would be displayed here</p>
+                                <p class="text-sm text-gray-500 mt-2">(In a real implementation, this would show a WebXR viewer)</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'document':
+                    // Para documentos de SharePoint, creamos un iframe para visualizar directamente
+                    const viewUrl = content.path.replace('/:b:/', '/:b:/g/');
+                    dynamicContent.innerHTML = `
+                        <div class="w-full h-full flex flex-col">
+                            <div class="flex items-center justify-between p-2 bg-gray-800">
+                                <h3 class="text-lg font-semibold">${content.title}</h3>
+                                <a href="${content.path}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm flex items-center">
+                                    <i class="fas fa-external-link-alt mr-1"></i> Abrir en nueva pestaña
+                                </a>
+                            </div>
+                            <iframe src="${viewUrl}" class="document-viewer flex-grow" frameborder="0"></iframe>
+                        </div>
+                    `;
+                    break;
+                default:
+                    dynamicContent.innerHTML = `
+                        <div class="text-center p-6">
+                            <i class="fas fa-question-circle text-5xl mb-4 text-gray-600"></i>
+                            <p class="text-gray-400">Unsupported content type</p>
+                        </div>
+                    `;
+            }
+            
+            updateActiveCarouselItem(content.id);
+            
+            const subsectionData = contentData[currentSection][currentSubsection];
+            const currentIndex = subsectionData.files.findIndex(file => file.id === content.id);
+            
+            document.getElementById('currentItem').textContent = currentIndex + 1;
+        }
+
+        function updateActiveCarouselItem(contentId) {
+            document.querySelectorAll('.carousel-item').forEach(item => {
+                item.classList.remove('border-2', 'border-accent');
+            });
+            
+            document.querySelectorAll(`.carousel-item[data-id="${contentId}"]`).forEach(item => {
+                item.classList.add('border-2', 'border-yellow-400');
+            });
+        }
+
+        function getSectionDescription(section) {
+            const descriptions = {
+                models: 'Our 3D model collection includes architectural designs, product prototypes, and mechanical assemblies. Each model is interactive and can be viewed from any angle.',
+                videos: 'The video library contains tutorials, product demonstrations, and informational content. All videos are streamed directly from YouTube.',
+                images: 'Browse high-resolution images including concept art, technical diagrams, and product photography. Click any image to view it in full resolution.',
+                panoramas: 'Experience immersive 360° views of our facilities, products, and environments. These interactive panoramas work on both desktop and mobile devices.',
+                documents: 'Access technical documentation, user manuals, and specification sheets. Most documents are in PDF format for easy viewing and downloading.'
+            };
+            
+            return descriptions[section] || '';
+        }
+
+        function getContentIcon(type) {
+            const icons = {
+                'video': 'fa-play-circle',
+                'image': 'fa-images',
+                'panorama': 'fa-globe-americas',
+                'document': 'fa-file-pdf',
+                'download': 'fa-file-download'
+            };
+            
+            return icons[type] || 'fa-file';
+        }
+
+        let currentCarouselIndex = 0;
+        let totalCarouselItems = 0;
+        let itemsPerView = 4;
+
+        function initCarousel() {
+            const carousel = document.querySelector('.carousel-container');
+            const items = document.querySelectorAll('.carousel-item');
+            totalCarouselItems = items.length;
+            
+            itemsPerView = 3;
+            
+            updateCarouselCounter();
+            updateCarouselNav();
+            
+            carousel.scrollLeft = 0;
+            currentCarouselIndex = 0;
+        }
+
+        function scrollCarousel(direction) {
+            const carousel = document.querySelector('.carousel-container');
+            const itemWidth = 100 + 12;
+            
+            currentCarouselIndex = Math.max(0, 
+                Math.min(totalCarouselItems - itemsPerView, 
+                currentCarouselIndex + direction));
+            
+            carousel.scrollTo({
+                left: currentCarouselIndex * itemWidth,
+                behavior: 'smooth'
+            });
+            
+            updateCarouselCounter();
+            updateCarouselNav();
+        }
+
+        function updateCarouselCounter() {
+            const subsectionData = contentData[currentSection][currentSubsection];
+            document.getElementById('totalItems').textContent = subsectionData.files.length;
+        }
+
+        function updateCarouselNav() {
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            
+            prevBtn.style.visibility = currentCarouselIndex > 0 ? 'visible' : 'hidden';
+            nextBtn.style.visibility = currentCarouselIndex < totalCarouselItems - itemsPerView ? 'visible' : 'hidden';
+        }
+
+        window.addEventListener('resize', () => {
+            itemsPerView = 3;
+            currentCarouselIndex = 0;
+            document.querySelector('.carousel-container').scrollLeft = 0;
+            updateCarouselCounter();
+            updateCarouselNav();
+        });
+
+        document.getElementById('carouselPrev').addEventListener('click', () => scrollCarousel(-1));
+        document.getElementById('carouselNext').addEventListener('click', () => scrollCarousel(1));
+
+        const fullscreenButton = document.getElementById('fullscreenButton');
+
+        fullscreenButton.addEventListener('click', toggleFullscreen);
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                if (mediaContainer.requestFullscreen) {
+                    mediaContainer.requestFullscreen();
+                } else if (mediaContainer.webkitRequestFullscreen) {
+                    mediaContainer.webkitRequestFullscreen();
+                } else if (mediaContainer.msRequestFullscreen) {
+                    mediaContainer.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('msfullscreenchange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            const icon = fullscreenButton.querySelector('i');
+            if (document.fullscreenElement) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+            function getEmbedUrl(url) {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        const videoId = url.includes("youtu.be")
+            ? url.split("/").pop().split("?")[0]
+            : new URL(url).searchParams.get("v");
+
+        return "https://www.youtube.com/embed/" + videoId;
+    }
+    return url;
+}
+
+    function renderFile(file) {
+    const container = document.getElementById("dynamicContent");
+
+    // ------------------ VIDEOS ------------------
+    if (file.type === "video") {
+        const embedUrl = file.path.includes("embed")
+            ? file.path
+            : getEmbedUrl(file.path);
+
+        container.innerHTML = `
+            <div class="w-full h-full relative">
+                <iframe 
+                    src="${embedUrl}" 
+                    class="document-viewer"
+                    allowfullscreen>
+                </iframe>
+
+                <div class="absolute bottom-4 right-4">
+                    <a href="${file.path}" target="_blank"
+                       class="px-4 py-2 bg-yellow-500 text-black rounded text-sm">
+                       Ver en YouTube
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+
+    // ------------------ IMÁGENES ------------------
+    else if (file.type === "image") {
+        container.innerHTML = `
+            <img src="${file.path}" class="w-full h-full object-contain">
+        `;
+    }
+
+    // ------------------ DOCUMENTOS ------------------
+    else if (file.type === "document") {
+        container.innerHTML = `
+            <div class="w-full h-full flex flex-col items-center justify-center gap-4 text-center">
+                <i class="fas fa-file-pdf text-6xl text-red-500"></i>
+                <p class="text-lg">Este documento no puede visualizarse dentro del visor.</p>
+                <a href="${file.path}" 
+                   download 
+                   target="_blank"
+                   class="px-4 py-2 bg-yellow-500 text-black rounded">
+                   Descargar Documento
+                </a>
+            </div>
+        `;
+    }
+}
+
+
+    </script>
+</body>
+</html>
